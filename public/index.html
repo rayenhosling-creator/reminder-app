@@ -3,173 +3,1045 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Нагадування</title>
+<title>Нагадай — нагадування з голосом і Telegram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f5f6fa;
-    --card: #ffffff;
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-    --text: #1f2330;
-    --muted: #6b7280;
-    --danger: #ef4444;
-    --border: #e5e7eb;
+  :root{
+    --bg:#05060d;
+    --bg-soft:#0a0c18;
+    --surface:#0d0f1e;
+    --surface-2:#13162a;
+    --border:rgba(0,255,225,0.16);
+    --border-strong:rgba(0,255,225,0.35);
+    --text:#eafcff;
+    --text-muted:#8b93b8;
+    --text-dim:#565d80;
+    --neon-cyan:#00fff0;
+    --neon-magenta:#ff2ed1;
+    --neon-violet:#8a5bff;
+    --danger:#ff4d6d;
+    --danger-dim:rgba(255,77,109,0.14);
+    --success:#39ffb0;
+    --radius-s:10px;
+    --radius-m:16px;
+    --radius-l:26px;
+    --glow-cyan:0 0 18px rgba(0,255,240,0.35);
+    --glow-magenta:0 0 20px rgba(255,46,209,0.35);
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    justify-content: center;
-    padding: 32px 16px;
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% -5%, rgba(138,91,255,0.16), transparent 40%),
+      radial-gradient(circle at 85% 0%, rgba(0,255,240,0.12), transparent 45%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
   }
-  .container { width: 100%; max-width: 480px; }
-  h1 { font-size: 22px; margin-bottom: 4px; }
-  p.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 24px; font-size: 14px; }
+  .app{
+    max-width:640px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:0 18px 90px;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 2px 8px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:30px;height:30px;border-radius:50%;
+    background:conic-gradient(from 220deg, var(--neon-cyan), var(--neon-violet), var(--neon-magenta), var(--neon-cyan));
+    box-shadow:0 0 14px rgba(0,255,240,0.55), 0 0 0 1px rgba(255,255,255,0.08) inset;
+  }
+  .brand h1{
+    font-family:'Orbitron',sans-serif;
+    font-weight:700;font-size:20px;letter-spacing:1px;margin:0;
+    background:linear-gradient(90deg, var(--neon-cyan), var(--neon-violet) 60%, var(--neon-magenta));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .icon-btn{
+    width:38px;height:38px;border-radius:50%;
+    background:var(--surface);border:1px solid var(--border);
+    color:var(--text-muted);font-size:17px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:background .15s, color .15s, transform .1s, box-shadow .15s;
+  }
+  .icon-btn:hover{background:var(--surface-2);color:var(--neon-cyan);box-shadow:var(--glow-cyan);}
+  .icon-btn:active{transform:scale(0.94);}
 
-  form {
-    background: var(--card);
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
+  .hero{
+    padding:18px 0 26px;display:flex;flex-direction:column;align-items:center;
+    text-align:center;border-bottom:1px solid var(--border);
   }
-  label { font-size: 13px; color: var(--muted); font-weight: 600; }
-  input[type=text], input[type=datetime-local] {
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 15px;
-    width: 100%;
+  .mic-btn{
+    position:relative;width:116px;height:116px;border-radius:50%;border:none;
+    background:radial-gradient(circle at 35% 30%, #141a33, #060812 70%);
+    box-shadow:0 0 0 1.5px var(--border-strong), var(--glow-cyan), 0 20px 50px rgba(0,0,0,0.6);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:transform .15s, box-shadow .2s;
   }
-  button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 11px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
+  .mic-btn:active{transform:scale(0.96);}
+  .mic-btn svg{width:40px;height:40px;fill:none;stroke:var(--neon-cyan);stroke-width:1.6;filter:drop-shadow(0 0 6px rgba(0,255,240,0.8));transition:stroke .2s;}
+  .mic-btn.recording{
+    background:radial-gradient(circle at 35% 30%, #2a1030, #10060f 70%);
+    box-shadow:0 0 0 1.5px rgba(255,46,209,0.6), var(--glow-magenta), 0 20px 50px rgba(0,0,0,0.6);
   }
-  button:hover { background: var(--primary-dark); }
+  .mic-btn.recording svg{stroke:var(--neon-magenta);filter:drop-shadow(0 0 8px rgba(255,46,209,0.9));}
+  .mic-btn.recording::before, .mic-btn.recording::after{
+    content:"";position:absolute;inset:-8px;border-radius:50%;
+    border:1.5px solid rgba(255,46,209,0.55);
+    animation:pulse-ring 1.8s ease-out infinite;
+  }
+  .mic-btn.recording::after{animation-delay:.6s;}
+  .mic-btn.processing{opacity:.75;pointer-events:none;}
+  .mic-btn.processing svg{stroke:var(--text-muted);filter:none;}
+  @keyframes pulse-ring{0%{transform:scale(0.9);opacity:.9;}100%{transform:scale(1.6);opacity:0;}}
+  .hero-status{margin:18px 0 0;font-size:14.5px;color:var(--text-muted);max-width:300px;line-height:1.5;}
+  .record-timer{
+    margin-top:10px;font-family:'Orbitron',sans-serif;font-size:15px;
+    color:var(--neon-magenta);letter-spacing:1px;text-shadow:0 0 10px rgba(255,46,209,0.6);
+  }
+  .hero-links{margin-top:16px;display:flex;gap:14px;font-size:13.5px;color:var(--text-dim);}
+  .link-btn{background:none;border:none;color:inherit;cursor:pointer;padding:4px 2px;border-bottom:1px dashed var(--text-dim);}
+  .link-btn:hover{color:var(--neon-cyan);border-color:var(--neon-cyan);}
 
-  .reminder {
-    background: var(--card);
-    padding: 14px 16px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  .text-panel{width:100%;max-width:420px;margin-top:16px;display:flex;flex-direction:column;gap:10px;}
+  textarea, input[type=text], input[type=password], input[type=date], input[type=time], input[type=number], select{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);
+    color:var(--text);font-family:inherit;font-size:14.5px;padding:11px 13px;outline:none;width:100%;
+    transition:border-color .15s, box-shadow .15s;
   }
-  .reminder .info { display: flex; flex-direction: column; gap: 2px; }
-  .reminder .text { font-size: 15px; }
-  .reminder .time { font-size: 13px; color: var(--muted); }
-  .reminder.past .text, .reminder.past .time { color: var(--muted); text-decoration: line-through; }
-  .delete-btn {
-    background: none;
-    color: var(--danger);
-    padding: 6px 10px;
-    font-size: 13px;
-    font-weight: 500;
+  textarea{resize:vertical;min-height:64px;line-height:1.4;}
+  textarea:focus, input:focus, select:focus{border-color:var(--neon-cyan);box-shadow:0 0 0 3px rgba(0,255,240,0.12);}
+  select option{background:var(--surface);color:var(--text);}
+  .primary-btn{
+    background:linear-gradient(90deg, var(--neon-cyan), var(--neon-violet));
+    color:#03040a;border:none;font-weight:700;font-size:14.5px;padding:11px 16px;
+    border-radius:var(--radius-s);cursor:pointer;
+    transition:filter .15s, transform .1s, box-shadow .15s;
+    box-shadow:0 0 16px rgba(0,255,240,0.25);
   }
-  .delete-btn:hover { background: #fee2e2; }
-  .empty { color: var(--muted); text-align: center; padding: 20px 0; font-size: 14px; }
+  .primary-btn:hover{filter:brightness(1.1);box-shadow:0 0 22px rgba(0,255,240,0.45);}
+  .primary-btn:active{transform:scale(0.98);}
+  .primary-btn:disabled{opacity:.5;cursor:default;box-shadow:none;}
+  .ghost-btn{
+    background:transparent;border:1px solid var(--border-strong);color:var(--text-muted);
+    font-size:14px;padding:10px 14px;border-radius:var(--radius-s);cursor:pointer;
+    transition:color .15s, border-color .15s;
+  }
+  .ghost-btn:hover{color:var(--neon-cyan);border-color:var(--neon-cyan);}
+
+  .preview-panel{
+    margin-top:22px;background:var(--surface);border:1px solid var(--border-strong);
+    border-radius:var(--radius-m);padding:16px;box-shadow:0 0 24px rgba(0,255,240,0.08);
+  }
+  .preview-panel h3{font-family:'Orbitron',sans-serif;font-weight:600;font-size:15px;margin:0 0 4px;color:var(--neon-cyan);}
+  .preview-sub{font-size:12.5px;color:var(--text-dim);margin:0 0 12px;}
+  .preview-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--border);}
+  .preview-item:first-of-type{border-top:none;}
+  .preview-item input[type=checkbox]{margin-top:3px;accent-color:var(--neon-cyan);width:16px;height:16px;}
+  .preview-item .pi-title{font-size:14.5px;font-weight:500;}
+  .preview-item .pi-meta{font-size:12.5px;color:var(--text-muted);margin-top:2px;}
+  .preview-actions{display:flex;gap:10px;margin-top:14px;}
+
+  .list-section{padding-top:22px;}
+  .group-label{
+    font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--neon-violet);
+    margin:22px 0 10px;padding-left:2px;
+  }
+  .group-label:first-child{margin-top:4px;}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);
+    padding:13px 14px;display:flex;gap:12px;margin-bottom:9px;align-items:flex-start;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .card:hover{border-color:var(--border-strong);box-shadow:0 0 18px rgba(0,255,240,0.08);}
+  .card.overdue{border-color:rgba(255,77,109,0.45);box-shadow:0 0 14px rgba(255,77,109,0.12);}
+  .card.completed{opacity:.45;}
+  .check-circle{
+    width:22px;height:22px;border-radius:50%;border:1.5px solid var(--text-dim);flex:none;margin-top:1px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;color:transparent;
+    transition:all .15s;font-size:13px;
+  }
+  .check-circle:hover{border-color:var(--neon-cyan);box-shadow:0 0 10px rgba(0,255,240,0.4);}
+  .card.completed .check-circle{background:var(--success);border-color:var(--success);color:#03150e;box-shadow:0 0 10px rgba(57,255,176,0.5);}
+  .card-body{flex:1;min-width:0;}
+  .card-title{font-size:15px;font-weight:500;line-height:1.35;word-break:break-word;}
+  .card.completed .card-title{text-decoration:line-through;text-decoration-color:var(--text-dim);}
+  .card-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .tag{font-size:11.5px;padding:3px 8px;border-radius:20px;background:var(--surface-2);color:var(--text-muted);border:1px solid transparent;}
+  .tag.time{color:var(--neon-cyan);background:rgba(0,255,240,0.08);border-color:rgba(0,255,240,0.25);}
+  .tag.overdue-tag{color:var(--danger);background:var(--danger-dim);border-color:rgba(255,77,109,0.3);}
+  .card-note{font-size:12.5px;color:var(--text-dim);margin-top:6px;line-height:1.4;}
+  .card-actions{display:flex;gap:4px;flex:none;}
+  .mini-btn{
+    width:28px;height:28px;border-radius:8px;border:none;background:transparent;color:var(--text-dim);
+    cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;
+  }
+  .mini-btn:hover{background:var(--surface-2);color:var(--neon-cyan);}
+  .empty-state{text-align:center;padding:50px 20px;color:var(--text-dim);font-size:14px;line-height:1.6;}
+  .empty-state .em-mark{font-size:30px;display:block;margin-bottom:10px;}
+  .completed-toggle{background:none;border:none;color:var(--text-dim);font-size:12.5px;cursor:pointer;padding:8px 2px;width:100%;text-align:left;}
+  .completed-toggle:hover{color:var(--neon-cyan);}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(2,3,8,0.8);
+    display:flex;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(3px);
+  }
+  .modal-overlay.hidden{display:none;}
+  @media (min-width:560px){.modal-overlay{align-items:center;}}
+  .modal{
+    background:var(--bg-soft);border:1px solid var(--border-strong);
+    border-radius:var(--radius-l) var(--radius-l) 0 0;width:100%;max-width:480px;max-height:88vh;
+    overflow-y:auto;padding:22px 20px 26px;
+    box-shadow:0 0 40px rgba(0,255,240,0.12), 0 20px 60px rgba(0,0,0,0.6);
+  }
+  @media (min-width:560px){.modal{border-radius:var(--radius-l);}}
+  .modal h2{font-family:'Orbitron',sans-serif;font-weight:600;font-size:17px;margin:0 0 18px;color:var(--neon-cyan);}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;color:var(--text-muted);margin-bottom:6px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .day-picker{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+  .day-chip{
+    width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);
+    color:var(--text-muted);font-size:12px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;user-select:none;transition:all .15s;
+  }
+  .day-chip.active{background:rgba(0,255,240,0.12);border-color:var(--neon-cyan);color:var(--neon-cyan);box-shadow:0 0 10px rgba(0,255,240,0.3);}
+  .modal-actions{display:flex;gap:10px;margin-top:18px;}
+  .modal-actions .primary-btn, .modal-actions .ghost-btn{flex:1;}
+  .modal-hint{font-size:12px;color:var(--text-dim);margin:-6px 0 14px;line-height:1.5;}
+  .modal-close-x{position:absolute;top:16px;right:16px;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer;}
+  .modal-inner-wrap{position:relative;}
+  .password-row{display:flex;gap:8px;}
+  .password-row input{flex:1;}
+
+  .toast-root{position:fixed;bottom:18px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:60;pointer-events:none;}
+  .toast{
+    background:var(--surface-2);border:1px solid var(--border-strong);color:var(--text);
+    padding:11px 18px;border-radius:30px;font-size:13.5px;
+    box-shadow:0 0 20px rgba(0,255,240,0.2), 0 10px 30px rgba(0,0,0,0.4);
+    animation:toast-in .25s ease-out;
+  }
+  @keyframes toast-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .hidden{display:none !important;}
+  ::selection{background:rgba(0,255,240,0.25);}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>🔔 Нагадування</h1>
-  <p class="subtitle">За 5 хв до кожного нагадування прийде повідомлення в Telegram</p>
+<div class="app">
 
-  <form id="reminder-form">
-    <div>
-      <label for="text">Текст нагадування</label>
-      <input type="text" id="text" placeholder="Напр. Подзвонити лікарю" required>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <h1>НАГАДАЙ</h1>
     </div>
-    <div>
-      <label for="datetime">Дата і час</label>
-      <input type="datetime-local" id="datetime" required>
-    </div>
-    <button type="submit">Додати нагадування</button>
-  </form>
+    <button class="icon-btn" id="settingsBtn" title="Налаштування" aria-label="Налаштування">⚙</button>
+  </header>
 
-  <div id="list"></div>
+  <section class="hero">
+    <button class="mic-btn" id="micBtn" aria-label="Записати голосове нагадування">
+      <svg id="micIcon" viewBox="0 0 24 24"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5V6.5a3.5 3.5 0 0 0-7 0v5A3.5 3.5 0 0 0 12 15z" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11v.5a6 6 0 0 0 12 0V11M12 18.5V21" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="hero-status" id="heroStatus">Натисни й скажи, що і коли нагадати</p>
+    <div class="record-timer hidden" id="recordTimer">00:00</div>
+
+    <div class="hero-links" id="heroLinks">
+      <button class="link-btn" id="toggleTextBtn">написати текстом</button>
+      <button class="link-btn" id="openManualBtn">додати вручну</button>
+    </div>
+
+    <div class="text-panel hidden" id="textPanel">
+      <textarea id="textInput" placeholder="Напр.: нагадай завтра о 9 ранку зателефонувати клієнту, і ще щопонеділка о 10 — планування тижня"></textarea>
+      <button class="primary-btn" id="textParseBtn">Розпізнати з AI</button>
+    </div>
+  </section>
+
+  <section class="list-section">
+    <div class="preview-panel hidden" id="previewPanel"></div>
+    <div id="remindersRoot"></div>
+  </section>
+
 </div>
 
-<script>
-const form = document.getElementById('reminder-form');
-const listEl = document.getElementById('list');
-
-async function loadReminders() {
-  const res = await fetch('/api/reminders');
-  const reminders = await res.json();
-  renderList(reminders);
-}
-
-function renderList(reminders) {
-  if (reminders.length === 0) {
-    listEl.innerHTML = '<div class="empty">Поки немає нагадувань</div>';
-    return;
-  }
-  const now = new Date();
-  listEl.innerHTML = reminders.map(r => {
-    const date = new Date(r.remind_at);
-    const isPast = date < now;
-    const formatted = date.toLocaleString('uk-UA', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    });
-    return `
-      <div class="reminder ${isPast ? 'past' : ''}">
-        <div class="info">
-          <div class="text">${escapeHtml(r.text)}</div>
-          <div class="time">${formatted}</div>
+<div class="modal-overlay hidden" id="settingsModal">
+  <div class="modal">
+    <div class="modal-inner-wrap">
+      <button class="modal-close-x" data-close="settingsModal">✕</button>
+      <h2>Налаштування AI</h2>
+      <p class="modal-hint">Ключ зберігається лише в цьому браузері (на твоєму телефоні) й використовується для розпізнавання голосу й тексту через Gemini API. Отримати ключ можна безкоштовно в Google AI Studio.</p>
+      <div class="field">
+        <label for="apiKeyInput">API ключ Gemini</label>
+        <div class="password-row">
+          <input type="password" id="apiKeyInput" placeholder="AIza...">
+          <button class="ghost-btn" id="toggleKeyVisibility" style="flex:none;padding:10px 12px;">👁</button>
         </div>
-        <button class="delete-btn" onclick="deleteReminder(${r.id})">Видалити</button>
       </div>
-    `;
-  }).join('');
-}
+      <div class="field">
+        <label for="modelInput">Модель</label>
+        <input type="text" id="modelInput" placeholder="gemini-2.5-flash">
+      </div>
+      <div class="modal-actions">
+        <button class="ghost-btn" data-close="settingsModal">Скасувати</button>
+        <button class="primary-btn" id="saveSettingsBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
+<div class="modal-overlay hidden" id="manualModal">
+  <div class="modal">
+    <div class="modal-inner-wrap">
+      <button class="modal-close-x" data-close="manualModal">✕</button>
+      <h2 id="manualModalTitle">Нове нагадування</h2>
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const text = document.getElementById('text').value.trim();
-  const datetimeLocal = document.getElementById('datetime').value;
-  if (!text || !datetimeLocal) return;
+      <div class="field">
+        <label for="mTitle">Що нагадати</label>
+        <input type="text" id="mTitle" placeholder="Наприклад: подзвонити лікарю">
+      </div>
 
-  const remindAt = new Date(datetimeLocal).toISOString();
+      <div class="row2">
+        <div class="field">
+          <label for="mDate">Дата</label>
+          <input type="date" id="mDate">
+        </div>
+        <div class="field">
+          <label for="mTime">Час</label>
+          <input type="time" id="mTime">
+        </div>
+      </div>
 
-  await fetch('/api/reminders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, remind_at: remindAt })
-  });
+      <div class="field">
+        <label for="mRecurrence">Повторення</label>
+        <select id="mRecurrence">
+          <option value="none">Не повторювати</option>
+          <option value="daily">Щодня</option>
+          <option value="weekly">Щотижня</option>
+          <option value="monthly">Щомісяця</option>
+          <option value="yearly">Щороку</option>
+        </select>
+      </div>
 
-  form.reset();
-  loadReminders();
-});
+      <div class="field hidden" id="weeklyDaysField">
+        <label>Дні тижня</label>
+        <div class="day-picker" id="dayPicker">
+          <div class="day-chip" data-day="mon">Пн</div>
+          <div class="day-chip" data-day="tue">Вт</div>
+          <div class="day-chip" data-day="wed">Ср</div>
+          <div class="day-chip" data-day="thu">Чт</div>
+          <div class="day-chip" data-day="fri">Пт</div>
+          <div class="day-chip" data-day="sat">Сб</div>
+          <div class="day-chip" data-day="sun">Нд</div>
+        </div>
+      </div>
 
-async function deleteReminder(id) {
-  await fetch(`/api/reminders/${id}`, { method: 'DELETE' });
-  loadReminders();
-}
+      <div class="field hidden" id="intervalField">
+        <label for="mInterval">Кожні N (одиниць повторення)</label>
+        <input type="number" id="mInterval" min="1" value="1" style="max-width:100px;">
+      </div>
 
-loadReminders();
-setInterval(loadReminders, 30000);
+      <div class="field">
+        <label for="mNote">Нотатка (необов'язково)</label>
+        <textarea id="mNote" placeholder="Додаткові деталі..." style="min-height:50px;"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="ghost-btn" data-close="manualModal">Скасувати</button>
+        <button class="primary-btn" id="saveManualBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-root" id="toastRoot"></div>
+
+<script>
+(function(){
+
+  const state = {
+    reminders: [],
+    settings: { apiKey:'', model:'gemini-2.5-flash' },
+    editingId: null,
+    showCompleted: false,
+    pendingPreview: null,
+    toastedIds: new Set()
+  };
+
+  const DAY_LABEL = {mon:'Пн',tue:'Вт',wed:'Ср',thu:'Чт',fri:'Пт',sat:'Сб',sun:'Нд'};
+
+  async function apiList(){
+    const res = await fetch('/api/reminders');
+    if (!res.ok) throw new Error('Не вдалося завантажити нагадування');
+    return res.json();
+  }
+  async function apiCreate(payload){
+    const res = await fetch('/api/reminders', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Не вдалося зберегти нагадування');
+    return res.json();
+  }
+  async function apiPatch(id, payload){
+    const res = await fetch(`/api/reminders/${id}`, {
+      method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error('Не вдалося оновити нагадування');
+    return res.json();
+  }
+  async function apiDelete(id){
+    const res = await fetch(`/api/reminders/${id}`, { method:'DELETE' });
+    if (!res.ok && res.status !== 204) throw new Error('Не вдалося видалити нагадування');
+  }
+
+  function loadSettings(){
+    try{
+      const raw = localStorage.getItem('nagaduy-settings');
+      if (raw) state.settings = Object.assign(state.settings, JSON.parse(raw));
+    }catch(e){}
+  }
+  function saveSettingsLocal(){
+    try{ localStorage.setItem('nagaduy-settings', JSON.stringify(state.settings)); }
+    catch(e){ console.error('localStorage save failed', e); }
+  }
+
+  async function refreshReminders(){
+    try{ state.reminders = await apiList(); }
+    catch(e){ showToast('Помилка звʼязку з сервером'); }
+  }
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function toLocalInputString(d){
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  function nowLocalLabel(){
+    const d = new Date();
+    const weekday = d.toLocaleDateString('uk-UA',{weekday:'long'});
+    const datePart = d.toLocaleDateString('uk-UA',{day:'numeric',month:'long',year:'numeric'});
+    return `${weekday}, ${datePart}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  function showToast(msg){
+    const root = document.getElementById('toastRoot');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    root.appendChild(el);
+    setTimeout(()=>{ el.remove(); }, 4200);
+  }
+  function escapeHtml(str){
+    return (str||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function recurrenceLabel(r){
+    const type = r.recurrence_type;
+    if (!type || type === 'none') return null;
+    const n = Math.max(1, parseInt(r.recurrence_interval,10) || 1);
+    if (type === 'daily') return n===1 ? 'щодня' : `кожні ${n} дні`;
+    if (type === 'weekly'){
+      if (r.recurrence_days && r.recurrence_days.length) return r.recurrence_days.map(d=>DAY_LABEL[d]).join(' ');
+      return n===1 ? 'щотижня' : `кожні ${n} тижні`;
+    }
+    if (type === 'monthly') return n===1 ? 'щомісяця' : `кожні ${n} міс.`;
+    if (type === 'yearly') return n===1 ? 'щороку' : `кожні ${n} р.`;
+    return null;
+  }
+
+  function fmtDateTime(iso){
+    const d = new Date(iso);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    const tmr = new Date(now); tmr.setDate(now.getDate()+1);
+    const isTomorrow = d.toDateString() === tmr.toDateString();
+    const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    if (sameDay) return `сьогодні, ${timeStr}`;
+    if (isTomorrow) return `завтра, ${timeStr}`;
+    return d.toLocaleDateString('uk-UA',{day:'numeric',month:'long'}) + ', ' + timeStr;
+  }
+
+  let audioCtx = null;
+  function playChime(){
+    try{
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [880, 1244];
+      notes.forEach((freq, i)=>{
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = audioCtx.currentTime + i*0.16;
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(0.18, start+0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start+0.5);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(start); osc.stop(start+0.55);
+      });
+    }catch(e){}
+  }
+  function checkLocalDue(){
+    const now = new Date();
+    for (const r of state.reminders){
+      if (r.completed || !r.remind_at || state.toastedIds.has(r.id)) continue;
+      const due = new Date(r.remind_at);
+      if (due <= now){
+        state.toastedIds.add(r.id);
+        playChime();
+        showToast('🔔 ' + r.text);
+      }
+    }
+  }
+
+  function groupReminders(){
+    const active = state.reminders.filter(r=>!r.completed);
+    const now = new Date();
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startTomorrow = new Date(startToday); startTomorrow.setDate(startToday.getDate()+1);
+    const startWeek = new Date(startToday); startWeek.setDate(startToday.getDate()+7);
+
+    const groups = { overdue:[], noDate:[], today:[], tomorrow:[], week:[], later:[] };
+    for (const r of active){
+      if (!r.remind_at){ groups.noDate.push(r); continue; }
+      const d = new Date(r.remind_at);
+      const isRecurring = r.recurrence_type && r.recurrence_type !== 'none';
+      if (d < now && !isRecurring){ groups.overdue.push(r); continue; }
+      if (d < startTomorrow) groups.today.push(r);
+      else if (d < startWeek && d.toDateString() === startTomorrow.toDateString()) groups.tomorrow.push(r);
+      else if (d < startWeek) groups.week.push(r);
+      else groups.later.push(r);
+    }
+    const byDate = (a,b)=> new Date(a.remind_at||0) - new Date(b.remind_at||0);
+    groups.overdue.sort(byDate); groups.today.sort(byDate); groups.tomorrow.sort(byDate);
+    groups.week.sort(byDate); groups.later.sort(byDate);
+
+    return [
+      {label:'Просрочено', items: groups.overdue},
+      {label:'Сьогодні', items: groups.today},
+      {label:'Завтра', items: groups.tomorrow},
+      {label:'Цього тижня', items: groups.week},
+      {label:'Пізніше', items: groups.later},
+      {label:'Без дати', items: groups.noDate}
+    ].filter(g=>g.items.length);
+  }
+
+  function cardHtml(r){
+    const overdue = r.remind_at && new Date(r.remind_at) < new Date() && (!r.recurrence_type || r.recurrence_type==='none') && !r.completed;
+    const rec = recurrenceLabel(r);
+    let metaHtml = '';
+    if (r.remind_at) metaHtml += `<span class="tag time">${escapeHtml(fmtDateTime(r.remind_at))}</span>`;
+    if (rec) metaHtml += `<span class="tag">↻ ${escapeHtml(rec)}</span>`;
+    if (overdue) metaHtml += `<span class="tag overdue-tag">просрочено</span>`;
+    return `
+      <div class="card ${overdue?'overdue':''} ${r.completed?'completed':''}" data-id="${r.id}">
+        <div class="check-circle" data-action="toggle" data-id="${r.id}">${r.completed?'✓':''}</div>
+        <div class="card-body">
+          <div class="card-title">${escapeHtml(r.text)}</div>
+          ${metaHtml ? `<div class="card-meta">${metaHtml}</div>` : ''}
+          ${r.note ? `<div class="card-note">${escapeHtml(r.note)}</div>` : ''}
+        </div>
+        <div class="card-actions">
+          <button class="mini-btn" data-action="edit" data-id="${r.id}" title="Редагувати">✎</button>
+          <button class="mini-btn" data-action="delete" data-id="${r.id}" title="Видалити">🗑</button>
+        </div>
+      </div>`;
+  }
+
+  function renderReminders(){
+    const root = document.getElementById('remindersRoot');
+    const groups = groupReminders();
+    const completed = state.reminders.filter(r=>r.completed);
+
+    if (!groups.length && !completed.length){
+      root.innerHTML = `<div class="empty-state"><span class="em-mark">◐</span>Ще немає жодного нагадування.<br>Скажи щось мікрофоном або додай вручну.</div>`;
+      return;
+    }
+
+    let html = '';
+    for (const g of groups){
+      html += `<div class="group-label">${g.label} · ${g.items.length}</div>`;
+      html += g.items.map(cardHtml).join('');
+    }
+
+    if (completed.length){
+      html += `<button class="completed-toggle" id="completedToggle">${state.showCompleted?'▾':'▸'} Виконано (${completed.length})</button>`;
+      if (state.showCompleted){
+        html += completed.slice().reverse().map(cardHtml).join('');
+      }
+    }
+
+    root.innerHTML = html;
+
+    root.querySelectorAll('[data-action="toggle"]').forEach(el=>{
+      el.addEventListener('click', ()=> toggleComplete(el.dataset.id));
+    });
+    root.querySelectorAll('[data-action="edit"]').forEach(el=>{
+      el.addEventListener('click', ()=> openManualModal(el.dataset.id));
+    });
+    root.querySelectorAll('[data-action="delete"]').forEach(el=>{
+      el.addEventListener('click', ()=> deleteReminder(el.dataset.id));
+    });
+    const ct = document.getElementById('completedToggle');
+    if (ct) ct.addEventListener('click', ()=>{ state.showCompleted = !state.showCompleted; renderReminders(); });
+  }
+
+  async function toggleComplete(id){
+    const r = state.reminders.find(x=>String(x.id)===String(id));
+    if (!r) return;
+    r.completed = !r.completed;
+    renderReminders();
+    try{ await apiPatch(id, { completed: r.completed }); }
+    catch(e){ showToast('Не вдалося оновити на сервері'); }
+  }
+  async function deleteReminder(id){
+    const r = state.reminders.find(x=>String(x.id)===String(id));
+    if (!r) return;
+    if (!confirm(`Видалити «${r.text}»?`)) return;
+    try{
+      await apiDelete(id);
+      state.reminders = state.reminders.filter(x=>String(x.id)!==String(id));
+      renderReminders();
+    }catch(e){ showToast('Не вдалося видалити'); }
+  }
+
+  function openManualModal(idOrNull){
+    state.editingId = idOrNull;
+    const modal = document.getElementById('manualModal');
+    const titleEl = document.getElementById('manualModalTitle');
+    const mTitle = document.getElementById('mTitle');
+    const mDate = document.getElementById('mDate');
+    const mTime = document.getElementById('mTime');
+    const mRecurrence = document.getElementById('mRecurrence');
+    const mInterval = document.getElementById('mInterval');
+    const mNote = document.getElementById('mNote');
+    const dayPicker = document.getElementById('dayPicker');
+
+    dayPicker.querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active'));
+
+    if (idOrNull){
+      const r = state.reminders.find(x=>String(x.id)===String(idOrNull));
+      titleEl.textContent = 'Редагувати нагадування';
+      mTitle.value = r.text || '';
+      if (r.remind_at){
+        const local = toLocalInputString(new Date(r.remind_at));
+        const [d,t] = local.split('T');
+        mDate.value = d; mTime.value = t || '';
+      } else { mDate.value=''; mTime.value=''; }
+      mRecurrence.value = r.recurrence_type || 'none';
+      mInterval.value = r.recurrence_interval || 1;
+      mNote.value = r.note || '';
+      if (r.recurrence_days){
+        r.recurrence_days.forEach(d=>{
+          const chip = dayPicker.querySelector(`[data-day="${d}"]`);
+          if (chip) chip.classList.add('active');
+        });
+      }
+    } else {
+      titleEl.textContent = 'Нове нагадування';
+      mTitle.value=''; mDate.value=''; mTime.value='';
+      mRecurrence.value='none'; mInterval.value=1; mNote.value='';
+    }
+    updateRecurrenceFieldsVisibility();
+    modal.classList.remove('hidden');
+    setTimeout(()=>mTitle.focus(), 50);
+  }
+
+  function updateRecurrenceFieldsVisibility(){
+    const type = document.getElementById('mRecurrence').value;
+    document.getElementById('weeklyDaysField').classList.toggle('hidden', type !== 'weekly');
+    document.getElementById('intervalField').classList.toggle('hidden', type === 'none');
+  }
+
+  function collectManualForm(){
+    const text = document.getElementById('mTitle').value.trim();
+    if (!text){ showToast('Введи, що саме нагадати'); return null; }
+    const date = document.getElementById('mDate').value;
+    const time = document.getElementById('mTime').value;
+    let remind_at = null;
+    if (date){ remind_at = `${date}T${time || '09:00'}`; }
+    else if (time){
+      const today = new Date();
+      remind_at = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}T${time}`;
+    }
+    const recurrence_type = document.getElementById('mRecurrence').value;
+    const recurrence_interval = parseInt(document.getElementById('mInterval').value,10) || 1;
+    const recurrence_days = Array.from(document.querySelectorAll('#dayPicker .day-chip.active')).map(c=>c.dataset.day);
+    const note = document.getElementById('mNote').value.trim();
+    if (recurrence_type === 'weekly' && recurrence_days.length === 0 && !remind_at){
+      showToast('Вкажи дату/час або дні тижня для повторення');
+      return null;
+    }
+    return { text, remind_at, note, recurrence_type, recurrence_interval, recurrence_days };
+  }
+
+  async function saveManual(){
+    const data = collectManualForm();
+    if (!data) return;
+    try{
+      if (state.editingId){
+        const updated = await apiPatch(state.editingId, data);
+        const idx = state.reminders.findIndex(x=>String(x.id)===String(state.editingId));
+        if (idx >= 0) state.reminders[idx] = updated;
+      } else {
+        const created = await apiCreate(data);
+        state.reminders.push(created);
+      }
+      renderReminders();
+      closeModal('manualModal');
+      showToast('Збережено');
+    }catch(e){
+      showToast('Не вдалося зберегти на сервері');
+    }
+  }
+
+  function openSettingsModal(){
+    document.getElementById('apiKeyInput').value = state.settings.apiKey || '';
+    document.getElementById('modelInput').value = state.settings.model || 'gemini-2.5-flash';
+    document.getElementById('settingsModal').classList.remove('hidden');
+  }
+  function saveSettingsFromModal(){
+    state.settings.apiKey = document.getElementById('apiKeyInput').value.trim();
+    state.settings.model = document.getElementById('modelInput').value.trim() || 'gemini-2.5-flash';
+    saveSettingsLocal();
+    closeModal('settingsModal');
+    showToast('Налаштування збережено');
+  }
+
+  function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+  const RESPONSE_SCHEMA = {
+    type: "OBJECT",
+    properties: {
+      reminders: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            title: { type: "STRING" },
+            datetime: { type: "STRING", description: "Формат YYYY-MM-DDTHH:mm (локальний час, без часової зони) або порожній рядок, якщо конкретний час не згадано" },
+            recurrence_type: { type: "STRING", enum: ["none","daily","weekly","monthly","yearly"] },
+            recurrence_interval: { type: "INTEGER" },
+            recurrence_days: { type: "ARRAY", items: { type: "STRING", enum: ["mon","tue","wed","thu","fri","sat","sun"] } },
+            note: { type: "STRING" }
+          },
+          required: ["title","recurrence_type"]
+        }
+      }
+    },
+    required: ["reminders"]
+  };
+
+  function buildPrompt(){
+    return `Ти — модуль розпізнавання нагадувань для голосового/текстового асистента українською мовою.
+Зараз: ${nowLocalLabel()} (формат для розрахунків: ${toLocalInputString(new Date())}).
+Твоє завдання: прослухати/прочитати вхідні дані користувача та виділити одне або декілька окремих нагадувань.
+Для кожного нагадування визнач:
+- title: короткий, чіткий опис справи (без слів "нагадай", "нагадати");
+- datetime: конкретну дату й час у форматі YYYY-MM-DDTHH:mm, розрахувавши відносні вирази ("завтра", "через 2 години", "у понеділок") від поточного моменту. Якщо конкретного часу немає, а є лише дата — поставь 09:00. Якщо ні дати, ні часу немає (просто задача) — залиш порожній рядок.
+- recurrence_type: none/daily/weekly/monthly/yearly, якщо йдеться про повторення ("щодня", "кожного понеділка", "щомісяця");
+- recurrence_interval: число (за замовчуванням 1);
+- recurrence_days: масив днів тижня (mon..sun) якщо повторення тижневе і прив'язане до конкретних днів;
+- note: додаткові деталі, якщо є, інакше порожній рядок.
+Якщо в повідомленні кілька різних справ — поверни кілька окремих об'єктів. Відповідай лише JSON за схемою, без пояснень.
+Вхідні дані користувача:`;
+  }
+
+  function apiUrl(){
+    const model = encodeURIComponent(state.settings.model || 'gemini-2.5-flash');
+    return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(state.settings.apiKey)}`;
+  }
+
+  async function callGemini(parts){
+    if (!state.settings.apiKey){
+      throw new Error('Спочатку додай API ключ у налаштуваннях');
+    }
+    const body = {
+      contents: [{ parts }],
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: RESPONSE_SCHEMA
+      }
+    };
+    const resp = await fetch(apiUrl(), {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok){
+      const errText = await resp.text().catch(()=> '');
+      throw new Error(`AI відповів помилкою (${resp.status}). ${errText.slice(0,180)}`);
+    }
+    const data = await resp.json();
+    const text = data && data.candidates && data.candidates[0] && data.candidates[0].content &&
+      data.candidates[0].content.parts ? data.candidates[0].content.parts.map(p=>p.text||'').join('') : '';
+    if (!text) throw new Error('AI не повернув розпізнаних даних');
+    let parsed;
+    try{ parsed = JSON.parse(text); }
+    catch(e){ throw new Error('Не вдалося розібрати відповідь AI'); }
+    return parsed;
+  }
+
+  async function callGeminiWithText(userText){
+    const parts = [{ text: buildPrompt() + '\n"' + userText + '"' }];
+    return callGemini(parts);
+  }
+
+  async function callGeminiWithAudio(base64, mime){
+    const parts = [
+      { inlineData: { mimeType: mime, data: base64 } },
+      { text: buildPrompt() + ' (дивись аудіо-запис вище)' }
+    ];
+    return callGemini(parts);
+  }
+
+  function parsedToReminders(parsed){
+    const list = (parsed && parsed.reminders) || [];
+    return list.map(item=>({
+      text: (item.title || 'Нагадування').trim(),
+      remind_at: item.datetime ? item.datetime : null,
+      note: item.note || '',
+      recurrence_type: item.recurrence_type || 'none',
+      recurrence_interval: item.recurrence_interval || 1,
+      recurrence_days: item.recurrence_days || []
+    }));
+  }
+
+  function showParsePreview(reminders){
+    state.pendingPreview = reminders;
+    const panel = document.getElementById('previewPanel');
+    if (!reminders.length){
+      panel.classList.add('hidden');
+      showToast('AI не розпізнав жодного нагадування. Спробуй ще раз або уточни деталі.');
+      return;
+    }
+    let html = `<h3>AI розпізнав ${reminders.length} ${reminders.length===1?'нагадування':'нагадувань'}</h3>
+      <p class="preview-sub">Перевір і збережи, або прибери непотрібне</p>`;
+    reminders.forEach((r,i)=>{
+      const rec = recurrenceLabel(r);
+      const meta = [r.remind_at ? fmtDateTime(r.remind_at) : 'без дати', rec].filter(Boolean).join(' · ');
+      html += `<div class="preview-item">
+        <input type="checkbox" checked data-idx="${i}" class="pi-check">
+        <div>
+          <div class="pi-title">${escapeHtml(r.text)}</div>
+          <div class="pi-meta">${escapeHtml(meta)}</div>
+        </div>
+      </div>`;
+    });
+    html += `<div class="preview-actions">
+      <button class="ghost-btn" id="previewCancel">Скасувати</button>
+      <button class="primary-btn" id="previewSave">Зберегти</button>
+    </div>`;
+    panel.innerHTML = html;
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+    document.getElementById('previewCancel').addEventListener('click', ()=>{
+      state.pendingPreview = null;
+      panel.classList.add('hidden');
+    });
+    document.getElementById('previewSave').addEventListener('click', async ()=>{
+      const checks = panel.querySelectorAll('.pi-check');
+      let count = 0;
+      for (const chk of checks){
+        if (chk.checked){
+          try{
+            const created = await apiCreate(state.pendingPreview[+chk.dataset.idx]);
+            state.reminders.push(created);
+            count++;
+          }catch(e){}
+        }
+      }
+      renderReminders();
+      panel.classList.add('hidden');
+      state.pendingPreview = null;
+      showToast(count ? `Додано ${count} нагадувань` : 'Нічого не вибрано');
+    });
+  }
+
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let recordingStream = null;
+  let timerInterval = null;
+  let recordSeconds = 0;
+
+  function setMicState(mode){
+    const btn = document.getElementById('micBtn');
+    const status = document.getElementById('heroStatus');
+    btn.classList.remove('recording','processing');
+    if (mode === 'recording'){
+      btn.classList.add('recording');
+      status.textContent = 'Слухаю... Натисни ще раз, щоб зупинити';
+    } else if (mode === 'processing'){
+      btn.classList.add('processing');
+      status.textContent = 'AI аналізує запис...';
+    } else {
+      status.textContent = 'Натисни й скажи, що і коли нагадати';
+    }
+  }
+
+  function startTimer(){
+    recordSeconds = 0;
+    const el = document.getElementById('recordTimer');
+    el.classList.remove('hidden');
+    el.textContent = '00:00';
+    timerInterval = setInterval(()=>{
+      recordSeconds++;
+      el.textContent = `${pad(Math.floor(recordSeconds/60))}:${pad(recordSeconds%60)}`;
+    }, 1000);
+  }
+  function stopTimer(){
+    clearInterval(timerInterval);
+    document.getElementById('recordTimer').classList.add('hidden');
+  }
+
+  function blobToBase64(blob){
+    return new Promise((resolve,reject)=>{
+      const reader = new FileReader();
+      reader.onloadend = ()=> resolve(String(reader.result).split(',')[1] || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function startRecording(){
+    if (!state.settings.apiKey){
+      showToast('Спочатку додай API ключ у налаштуваннях');
+      openSettingsModal();
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      showToast('Цей браузер не підтримує запис аудіо');
+      return;
+    }
+    try{
+      recordingStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    }catch(e){
+      showToast('Немає доступу до мікрофона');
+      return;
+    }
+    audioChunks = [];
+    const candidates = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/mp4'];
+    let chosen = '';
+    for (const c of candidates){
+      if (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)){ chosen = c; break; }
+    }
+    try{
+      mediaRecorder = chosen ? new MediaRecorder(recordingStream, {mimeType: chosen}) : new MediaRecorder(recordingStream);
+    }catch(e){
+      mediaRecorder = new MediaRecorder(recordingStream);
+    }
+    mediaRecorder.addEventListener('dataavailable', e=>{ if (e.data && e.data.size>0) audioChunks.push(e.data); });
+    mediaRecorder.addEventListener('stop', onRecordingStop);
+    mediaRecorder.start();
+    setMicState('recording');
+    startTimer();
+  }
+
+  function stopRecording(){
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+    if (recordingStream) recordingStream.getTracks().forEach(t=>t.stop());
+    stopTimer();
+  }
+
+  async function onRecordingStop(){
+    setMicState('processing');
+    const mime = (mediaRecorder && mediaRecorder.mimeType) || 'audio/webm';
+    const blob = new Blob(audioChunks, {type: mime});
+    if (blob.size < 800){
+      showToast('Запис занадто короткий, спробуй ще раз');
+      setMicState('idle');
+      return;
+    }
+    try{
+      const base64 = await blobToBase64(blob);
+      const parsed = await callGeminiWithAudio(base64, mime);
+      const reminders = parsedToReminders(parsed);
+      showParsePreview(reminders);
+    }catch(err){
+      showToast(err.message || 'Помилка розпізнавання');
+    }finally{
+      setMicState('idle');
+    }
+  }
+
+  let isRecording = false;
+  function onMicClick(){
+    if (!isRecording){
+      isRecording = true;
+      startRecording();
+    } else {
+      isRecording = false;
+      stopRecording();
+    }
+  }
+
+  async function onTextParse(){
+    const input = document.getElementById('textInput');
+    const text = input.value.trim();
+    if (!text){ showToast('Введи текст нагадування'); return; }
+    if (!state.settings.apiKey){
+      showToast('Спочатку додай API ключ у налаштуваннях');
+      openSettingsModal();
+      return;
+    }
+    const btn = document.getElementById('textParseBtn');
+    btn.disabled = true;
+    btn.textContent = 'AI аналізує...';
+    try{
+      const parsed = await callGeminiWithText(text);
+      const reminders = parsedToReminders(parsed);
+      showParsePreview(reminders);
+      input.value = '';
+    }catch(err){
+      showToast(err.message || 'Помилка розпізнавання');
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Розпізнати з AI';
+    }
+  }
+
+  function init(){
+    document.getElementById('micBtn').addEventListener('click', onMicClick);
+    document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
+    document.getElementById('saveSettingsBtn').addEventListener('click', saveSettingsFromModal);
+    document.getElementById('openManualBtn').addEventListener('click', ()=>openManualModal(null));
+    document.getElementById('saveManualBtn').addEventListener('click', saveManual);
+    document.getElementById('mRecurrence').addEventListener('change', updateRecurrenceFieldsVisibility);
+    document.getElementById('textParseBtn').addEventListener('click', onTextParse);
+    document.getElementById('toggleTextBtn').addEventListener('click', ()=>{
+      document.getElementById('textPanel').classList.toggle('hidden');
+    });
+    document.getElementById('toggleKeyVisibility').addEventListener('click', ()=>{
+      const inp = document.getElementById('apiKeyInput');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    });
+    document.querySelectorAll('[data-close]').forEach(btn=>{
+      btn.addEventListener('click', ()=> closeModal(btn.dataset.close));
+    });
+    document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+      overlay.addEventListener('click', e=>{ if (e.target === overlay) overlay.classList.add('hidden'); });
+    });
+    document.getElementById('dayPicker').addEventListener('click', e=>{
+      const chip = e.target.closest('.day-chip');
+      if (chip) chip.classList.toggle('active');
+    });
+
+    loadSettings();
+    refreshReminders().then(()=>{
+      renderReminders();
+      checkLocalDue();
+    });
+    setInterval(async ()=>{
+      await refreshReminders();
+      renderReminders();
+      checkLocalDue();
+    }, 20000);
+  }
+
+  init();
+})();
 </script>
 </body>
 </html>
