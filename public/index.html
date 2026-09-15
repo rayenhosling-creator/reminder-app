@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Нагадай — нагадування з голосом і Telegram</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Нагадай">
+<meta name="theme-color" content="#05060d">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -179,6 +185,13 @@
   .tag.time{color:var(--neon-cyan);background:rgba(0,255,240,0.08);border-color:rgba(0,255,240,0.25);}
   .tag.overdue-tag{color:var(--danger);background:var(--danger-dim);border-color:rgba(255,77,109,0.3);}
   .card-note{font-size:12.5px;color:var(--text-dim);margin-top:6px;line-height:1.4;}
+  .countdown-row{margin-top:8px;}
+  .countdown-text{font-size:11.5px;color:var(--text-muted);font-family:'Orbitron',sans-serif;letter-spacing:.4px;}
+  .progress-track{
+    margin-top:4px;height:5px;border-radius:4px;background:var(--surface-2);
+    overflow:hidden;border:1px solid var(--border);
+  }
+  .progress-fill{height:100%;border-radius:4px;transition:width 1s linear;}
   .card-actions{display:flex;gap:4px;flex:none;}
   .mini-btn{
     width:28px;height:28px;border-radius:8px;border:none;background:transparent;color:var(--text-dim);
@@ -291,6 +304,11 @@
         <button class="ghost-btn" data-close="settingsModal">Скасувати</button>
         <button class="primary-btn" id="saveSettingsBtn">Зберегти</button>
       </div>
+
+      <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border);">
+        <p class="modal-hint" style="margin-top:0;">Ця дія видалить усі нагадування безповоротно.</p>
+        <button class="ghost-btn" id="clearAllBtn" style="width:100%;border-color:rgba(255,77,109,0.4);color:var(--danger);">🗑 Очистити всі нагадування</button>
+      </div>
     </div>
   </div>
 </div>
@@ -321,6 +339,7 @@
         <label for="mRecurrence">Повторення</label>
         <select id="mRecurrence">
           <option value="none">Не повторювати</option>
+          <option value="hours">Кожні N годин</option>
           <option value="daily">Щодня</option>
           <option value="weekly">Щотижня</option>
           <option value="monthly">Щомісяця</option>
@@ -342,7 +361,7 @@
       </div>
 
       <div class="field hidden" id="intervalField">
-        <label for="mInterval">Кожні N (одиниць повторення)</label>
+        <label for="mInterval" id="intervalLabel">Кожні N (одиниць повторення)</label>
         <input type="number" id="mInterval" min="1" value="1" style="max-width:100px;">
       </div>
 
@@ -398,6 +417,10 @@
     const res = await fetch(`/api/reminders/${id}`, { method:'DELETE' });
     if (!res.ok && res.status !== 204) throw new Error('Не вдалося видалити нагадування');
   }
+  async function apiClearAll(){
+    const res = await fetch('/api/reminders', { method:'DELETE' });
+    if (!res.ok && res.status !== 204) throw new Error('Не вдалося очистити нагадування');
+  }
 
   function loadSettings(){
     try{
@@ -441,6 +464,7 @@
     const type = r.recurrence_type;
     if (!type || type === 'none') return null;
     const n = Math.max(1, parseInt(r.recurrence_interval,10) || 1);
+    if (type === 'hours') return n===1 ? 'щогодини' : `кожні ${n} год.`;
     if (type === 'daily') return n===1 ? 'щодня' : `кожні ${n} дні`;
     if (type === 'weekly'){
       if (r.recurrence_days && r.recurrence_days.length) return r.recurrence_days.map(d=>DAY_LABEL[d]).join(' ');
@@ -527,6 +551,42 @@
     ].filter(g=>g.items.length);
   }
 
+  function formatCountdown(ms){
+    if (ms <= 0) return 'зараз ⏰';
+    const totalMin = Math.floor(ms / 60000);
+    const days = Math.floor(totalMin / 1440);
+    const hours = Math.floor((totalMin % 1440) / 60);
+    const mins = totalMin % 60;
+    if (days > 0) return `через ${days} д ${hours} год`;
+    if (hours > 0) return `через ${hours} год ${mins} хв`;
+    if (mins > 0) return `через ${mins} хв`;
+    return 'менше хвилини';
+  }
+  function progressColor(fraction){
+    // 0 = зелений (безпечно, багато часу), 1 = червоний (майже настав час)
+    const from = [57,255,176];   // --success
+    const to = [255,77,109];     // --danger
+    const rgb = from.map((c,i)=> Math.round(c + (to[i]-c)*fraction));
+    return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+  }
+  function countdownHtml(r){
+    if (!r.remind_at || r.completed) return '';
+    const now = Date.now();
+    const due = new Date(r.remind_at).getTime();
+    const msLeft = due - now;
+    const isRecurring = r.recurrence_type && r.recurrence_type !== 'none';
+    if (msLeft <= 0 && !isRecurring) return ''; // просрочені некритичні — вже позначені тегом overdue
+    const createdMs = r.created_at ? new Date(r.created_at.replace(' ', 'T') + 'Z').getTime() : (due - 24*3600*1000);
+    const windowMs = Math.min(24*3600*1000, Math.max(60000, due - createdMs));
+    const fraction = Math.min(1, Math.max(0, 1 - msLeft/windowMs));
+    const pct = Math.round(fraction*100);
+    const color = progressColor(fraction);
+    return `<div class="countdown-row">
+      <span class="countdown-text">${escapeHtml(formatCountdown(msLeft))}</span>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${color};"></div></div>
+    </div>`;
+  }
+
   function cardHtml(r){
     const overdue = r.remind_at && new Date(r.remind_at) < new Date() && (!r.recurrence_type || r.recurrence_type==='none') && !r.completed;
     const rec = recurrenceLabel(r);
@@ -541,6 +601,7 @@
           <div class="card-title">${escapeHtml(r.text)}</div>
           ${metaHtml ? `<div class="card-meta">${metaHtml}</div>` : ''}
           ${r.note ? `<div class="card-note">${escapeHtml(r.note)}</div>` : ''}
+          ${countdownHtml(r)}
         </div>
         <div class="card-actions">
           <button class="mini-btn" data-action="edit" data-id="${r.id}" title="Редагувати">✎</button>
@@ -652,6 +713,11 @@
     const type = document.getElementById('mRecurrence').value;
     document.getElementById('weeklyDaysField').classList.toggle('hidden', type !== 'weekly');
     document.getElementById('intervalField').classList.toggle('hidden', type === 'none');
+    const labels = {
+      hours: 'Кожні N годин', daily: 'Кожні N днів', weekly: 'Кожні N тижнів',
+      monthly: 'Кожні N місяців', yearly: 'Кожні N років'
+    };
+    document.getElementById('intervalLabel').textContent = labels[type] || 'Кожні N (одиниць повторення)';
   }
 
   function collectManualForm(){
@@ -660,10 +726,11 @@
     const date = document.getElementById('mDate').value;
     const time = document.getElementById('mTime').value;
     let remind_at = null;
-    if (date){ remind_at = `${date}T${time || '09:00'}`; }
+    if (date){ remind_at = new Date(`${date}T${time || '09:00'}`).toISOString(); }
     else if (time){
       const today = new Date();
-      remind_at = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}T${time}`;
+      const localStr = `${today.getFullYear()}-${pad(today.getMonth()+1)}-${pad(today.getDate())}T${time}`;
+      remind_at = new Date(localStr).toISOString();
     }
     const recurrence_type = document.getElementById('mRecurrence').value;
     const recurrence_interval = parseInt(document.getElementById('mInterval').value,10) || 1;
@@ -721,7 +788,7 @@
           properties: {
             title: { type: "STRING" },
             datetime: { type: "STRING", description: "Формат YYYY-MM-DDTHH:mm (локальний час, без часової зони) або порожній рядок, якщо конкретний час не згадано" },
-            recurrence_type: { type: "STRING", enum: ["none","daily","weekly","monthly","yearly"] },
+            recurrence_type: { type: "STRING", enum: ["none","hours","daily","weekly","monthly","yearly"] },
             recurrence_interval: { type: "INTEGER" },
             recurrence_days: { type: "ARRAY", items: { type: "STRING", enum: ["mon","tue","wed","thu","fri","sat","sun"] } },
             note: { type: "STRING" }
@@ -740,7 +807,7 @@
 Для кожного нагадування визнач:
 - title: короткий, чіткий опис справи (без слів "нагадай", "нагадати");
 - datetime: конкретну дату й час у форматі YYYY-MM-DDTHH:mm, розрахувавши відносні вирази ("завтра", "через 2 години", "у понеділок") від поточного моменту. Якщо конкретного часу немає, а є лише дата — поставь 09:00. Якщо ні дати, ні часу немає (просто задача) — залиш порожній рядок.
-- recurrence_type: none/daily/weekly/monthly/yearly, якщо йдеться про повторення ("щодня", "кожного понеділка", "щомісяця");
+- recurrence_type: none/hours/daily/weekly/monthly/yearly, якщо йдеться про повторення ("щодня", "кожні 3 години", "кожного понеділка", "щомісяця"); "hours" використовуй, коли явно згадані години ("кожні 2 години", "щогодини");
 - recurrence_interval: число (за замовчуванням 1);
 - recurrence_days: масив днів тижня (mon..sun) якщо повторення тижневе і прив'язане до конкретних днів;
 - note: додаткові деталі, якщо є, інакше порожній рядок.
@@ -800,7 +867,7 @@
     const list = (parsed && parsed.reminders) || [];
     return list.map(item=>({
       text: (item.title || 'Нагадування').trim(),
-      remind_at: item.datetime ? item.datetime : null,
+      remind_at: item.datetime ? new Date(item.datetime).toISOString() : null,
       note: item.note || '',
       recurrence_type: item.recurrence_type || 'none',
       recurrence_interval: item.recurrence_interval || 1,
@@ -1006,6 +1073,18 @@
     document.getElementById('micBtn').addEventListener('click', onMicClick);
     document.getElementById('settingsBtn').addEventListener('click', openSettingsModal);
     document.getElementById('saveSettingsBtn').addEventListener('click', saveSettingsFromModal);
+    document.getElementById('clearAllBtn').addEventListener('click', async ()=>{
+      if (!state.reminders.length){ showToast('Список і так порожній'); return; }
+      if (!confirm('Видалити ВСІ нагадування без можливості відновити?')) return;
+      try{
+        await apiClearAll();
+        state.reminders = [];
+        state.toastedIds.clear();
+        renderReminders();
+        closeModal('settingsModal');
+        showToast('Усі нагадування видалено');
+      }catch(e){ showToast('Не вдалося очистити нагадування'); }
+    });
     document.getElementById('openManualBtn').addEventListener('click', ()=>openManualModal(null));
     document.getElementById('saveManualBtn').addEventListener('click', saveManual);
     document.getElementById('mRecurrence').addEventListener('change', updateRecurrenceFieldsVisibility);
