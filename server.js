@@ -69,7 +69,9 @@ function addOccurrence(fromDate, type, interval, daysCsv) {
   const n = Math.max(1, parseInt(interval, 10) || 1);
   const days = (daysCsv || '').split(',').map(s => s.trim()).filter(Boolean);
 
-  if (type === 'daily') {
+  if (type === 'hours') {
+    d.setUTCHours(d.getUTCHours() + n);
+  } else if (type === 'daily') {
     d.setUTCDate(d.getUTCDate() + n);
   } else if (type === 'weekly') {
     if (days.length) {
@@ -175,7 +177,13 @@ app.patch('/api/reminders/:id', (req, res) => {
   res.json({ ...updated, completed: !!updated.completed, recurrence_days: updated.recurrence_days ? updated.recurrence_days.split(',').filter(Boolean) : [] });
 });
 
-// Видалити нагадування
+// Видалити ВСІ нагадування (кнопка "Очистити все" в налаштуваннях)
+app.delete('/api/reminders', (req, res) => {
+  db.prepare('DELETE FROM reminders').run();
+  res.status(204).end();
+});
+
+// Видалити одне нагадування
 app.delete('/api/reminders/:id', (req, res) => {
   db.prepare('DELETE FROM reminders WHERE id = ?').run(req.params.id);
   res.status(204).end();
@@ -201,7 +209,8 @@ cron.schedule('* * * * *', async () => {
   `).all(in5min.toISOString(), now.toISOString());
 
   for (const r of upcoming) {
-    await sendTelegramMessage(`⏰ Через 5 хв: ${r.text}`);
+    const noteSuffix = r.note ? `\nНотатка: ${r.note}` : '';
+    await sendTelegramMessage(`⏰ Через 5 хв: ${r.text}${noteSuffix}`);
     db.prepare('UPDATE reminders SET notified_5min = 1 WHERE id = ?').run(r.id);
   }
 
@@ -215,7 +224,8 @@ cron.schedule('* * * * *', async () => {
   `).all(now.toISOString());
 
   for (const r of due) {
-    await sendTelegramMessage(`🔔 Зараз: ${r.text}`);
+    const noteSuffix = r.note ? `\nНотатка: ${r.note}` : '';
+    await sendTelegramMessage(`🔔 Зараз: ${r.text}${noteSuffix}`);
     if (r.recurrence_type && r.recurrence_type !== 'none') {
       const next = addOccurrence(r.remind_at, r.recurrence_type, r.recurrence_interval, r.recurrence_days);
       db.prepare(`
