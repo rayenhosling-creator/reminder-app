@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Нагадування</title>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card: #ffffff;
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --text: #1f2330;
+    --muted: #6b7280;
+    --danger: #ef4444;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+  .container { width: 100%; max-width: 480px; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  p.subtitle { color: var(--muted); margin-top: 0; margin-bottom: 24px; font-size: 14px; }
+
+  form {
+    background: var(--card);
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  label { font-size: 13px; color: var(--muted); font-weight: 600; }
+  input[type=text], input[type=datetime-local] {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 15px;
+    width: 100%;
+  }
+  button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 11px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: var(--primary-dark); }
+
+  .reminder {
+    background: var(--card);
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .reminder .info { display: flex; flex-direction: column; gap: 2px; }
+  .reminder .text { font-size: 15px; }
+  .reminder .time { font-size: 13px; color: var(--muted); }
+  .reminder.past .text, .reminder.past .time { color: var(--muted); text-decoration: line-through; }
+  .delete-btn {
+    background: none;
+    color: var(--danger);
+    padding: 6px 10px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .delete-btn:hover { background: #fee2e2; }
+  .empty { color: var(--muted); text-align: center; padding: 20px 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔔 Нагадування</h1>
+  <p class="subtitle">За 5 хв до кожного нагадування прийде повідомлення в Telegram</p>
+
+  <form id="reminder-form">
+    <div>
+      <label for="text">Текст нагадування</label>
+      <input type="text" id="text" placeholder="Напр. Подзвонити лікарю" required>
+    </div>
+    <div>
+      <label for="datetime">Дата і час</label>
+      <input type="datetime-local" id="datetime" required>
+    </div>
+    <button type="submit">Додати нагадування</button>
+  </form>
+
+  <div id="list"></div>
+</div>
+
+<script>
+const form = document.getElementById('reminder-form');
+const listEl = document.getElementById('list');
+
+async function loadReminders() {
+  const res = await fetch('/api/reminders');
+  const reminders = await res.json();
+  renderList(reminders);
+}
+
+function renderList(reminders) {
+  if (reminders.length === 0) {
+    listEl.innerHTML = '<div class="empty">Поки немає нагадувань</div>';
+    return;
+  }
+  const now = new Date();
+  listEl.innerHTML = reminders.map(r => {
+    const date = new Date(r.remind_at);
+    const isPast = date < now;
+    const formatted = date.toLocaleString('uk-UA', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    return `
+      <div class="reminder ${isPast ? 'past' : ''}">
+        <div class="info">
+          <div class="text">${escapeHtml(r.text)}</div>
+          <div class="time">${formatted}</div>
+        </div>
+        <button class="delete-btn" onclick="deleteReminder(${r.id})">Видалити</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = document.getElementById('text').value.trim();
+  const datetimeLocal = document.getElementById('datetime').value;
+  if (!text || !datetimeLocal) return;
+
+  const remindAt = new Date(datetimeLocal).toISOString();
+
+  await fetch('/api/reminders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, remind_at: remindAt })
+  });
+
+  form.reset();
+  loadReminders();
+});
+
+async function deleteReminder(id) {
+  await fetch(`/api/reminders/${id}`, { method: 'DELETE' });
+  loadReminders();
+}
+
+loadReminders();
+setInterval(loadReminders, 30000);
+</script>
+</body>
+</html>
